@@ -59,7 +59,7 @@
 ```bash
 # Inside your WordPress installation
 cd wp-content/plugins/
-git clone https://github.com/yourname/shb.git shb
+git clone https://github.com/arunammisetty/SHB.git 
 # or download & unzip the release
 
 # Activate
