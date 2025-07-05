@@ -12,29 +12,30 @@ final class SHB_Core {
 	/** Plugin version */
 	const VERSION = '1.1.0';
 
-	/** Option key */
+	/** wp_options key */
 	private $option_key = 'shb_settings';
 
-	/** Singleton store */
+	/** Singleton holder */
 	private static $instance = null;
 
-	/** Accessor */
+	/** Get instance */
 	public static function instance(): self {
 		return self::$instance ?: ( self::$instance = new self() );
 	}
 
 	/** Boot */
 	private function __construct() {
+
 		// i18n
 		add_action( 'plugins_loaded', [ $this, 'load_textdomain' ] );
 
-		// Admin
+		// Admin UI
 		add_action( 'admin_menu',            [ $this, 'add_menu' ] );
 		add_action( 'admin_init',            [ $this, 'register_settings' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
 		add_action( 'admin_notices',         [ $this, 'maybe_activation_notice' ] );
 
-		// AJAX wizard
+		// AJAX (wizard)
 		add_action( 'wp_ajax_shb_apply_recommended', [ $this, 'ajax_apply_recommended' ] );
 
 		// Front‑end headers
@@ -44,7 +45,7 @@ final class SHB_Core {
 		register_activation_hook( SHB_FILE, [ $this, 'on_activate' ] );
 	}
 
-	/** No clone / wakeup */
+	/** Disable clone / wakeup */
 	private function __clone() {}
 	private function __wakeup() {}
 
@@ -56,7 +57,7 @@ final class SHB_Core {
 	}
 
 	/*--------------------------------------------------------------
-	 Admin UI
+	 Admin
 	--------------------------------------------------------------*/
 	public function add_menu(): void {
 		add_options_page(
@@ -127,8 +128,8 @@ final class SHB_Core {
 		if ( 'settings_page_shb' !== $hook ) {
 			return;
 		}
-		wp_enqueue_style( 'shb-admin', SHB_URL . 'assets/css/admin.css', [], self::VERSION );
-		wp_enqueue_style( 'shb-wizard', SHB_URL . 'admin/wizard.css', [], self::VERSION );
+		wp_enqueue_style( 'shb-admin',  SHB_URL . 'assets/css/admin.css',  [], self::VERSION );
+		wp_enqueue_style( 'shb-wizard', SHB_URL . 'admin/wizard.css',      [], self::VERSION );
 		wp_enqueue_script( 'shb-wizard', SHB_URL . 'admin/wizard.js', [ 'jquery' ], self::VERSION, true );
 		wp_localize_script(
 			'shb-wizard',
@@ -140,14 +141,14 @@ final class SHB_Core {
 	}
 
 	/*--------------------------------------------------------------
-	 AJAX – Wizard
+	 AJAX (wizard)
 	--------------------------------------------------------------*/
 	public function ajax_apply_recommended(): void {
 		check_ajax_referer( 'shb_wizard', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( __( 'Permission denied', 'shb' ), 403 );
 		}
-		update_option( $this->option_key, [ 'mode' => 'strict' ] ); // “Strict” is our recommended default
+		update_option( $this->option_key, [ 'mode' => 'strict' ] ); // “Strict” = recommended preset
 		wp_send_json_success();
 	}
 
@@ -157,6 +158,7 @@ final class SHB_Core {
 	public function maybe_send_headers(): void {
 		$mode = $this->get_setting( 'mode', 'safe' );
 
+		// Always opt‑out of FLoC / Topics
 		header( 'Permissions-Policy: interest-cohort=()' );
 
 		switch ( $mode ) {
@@ -183,27 +185,68 @@ final class SHB_Core {
 		return '' === $key ? $options : ( $options[ $key ] ?? $default );
 	}
 
+	/**
+	 * “good” | “warning” | “critical” for dashboard tile.
+	 */
+	public function get_status(): string {
+		$missing = $this->count_missing_headers();
+		if ( 0 === $missing ) {
+			return 'good';
+		}
+		return ( $missing <= 2 ) ? 'warning' : 'critical';
+	}
+
+	/**
+	 * Count how many recommended headers haven’t been sent.
+	 */
+	public function count_missing_headers(): int {
+		$recommended = [ 'strict-transport-security', 'referrer-policy' ];
+
+		$mode = $this->get_setting( 'mode', 'safe' );
+		if ( in_array( $mode, [ 'strict', 'paranoid' ], true ) ) {
+			$recommended[] = 'content-security-policy';
+		}
+		if ( 'paranoid' === $mode ) {
+			array_push( $recommended, 'cross-origin-opener-policy', 'cross-origin-embedder-policy' );
+		}
+
+		$sent = array_map( 'strtolower', headers_list() );
+
+		$missing = 0;
+		foreach ( $recommended as $name ) {
+			$found = false;
+			foreach ( $sent as $line ) {
+				if ( 0 === strpos( $line, $name ) ) { $found = true; break; }
+			}
+			if ( ! $found ) {
+				$missing++;
+			}
+		}
+		return $missing;
+	}
+
 	/*--------------------------------------------------------------
-	 Activation redirect
+	 Activation notice
 	--------------------------------------------------------------*/
 	public function on_activate(): void {
 		add_option( 'shb_activation_redirect', true );
 	}
 
 	public function maybe_activation_notice(): void {
-		if ( get_option( 'shb_activation_redirect', false ) ) {
-			delete_option( 'shb_activation_redirect' );
-			printf(
-				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-				wp_kses(
-					sprintf(
-						/* translators: %s = settings URL */
-						__( 'SHB activated! Visit <a href="%s">Settings → Security Headers</a> to run the 60‑second wizard.', 'shb' ),
-						esc_url( admin_url( 'options-general.php?page=shb' ) )
-					),
-					[ 'a' => [ 'href' => [] ] ]
-				)
-			);
+		if ( ! get_option( 'shb_activation_redirect' ) ) {
+			return;
 		}
+		delete_option( 'shb_activation_redirect' );
+		printf(
+			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+			wp_kses(
+				sprintf(
+					/* translators: %s = settings URL */
+					__( 'SHB activated – go to <a href="%s">Settings → Security Headers</a> to run the 60‑second wizard.', 'shb' ),
+					esc_url( admin_url( 'options-general.php?page=shb' ) )
+				),
+				[ 'a' => [ 'href' => [] ] ]
+			)
+		);
 	}
 }

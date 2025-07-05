@@ -1,10 +1,10 @@
 .shb-modal{
-	position:fixed;top:0;left:0;width:100%;height:100%;
-	background:rgba(0,0,0,.65);z-index:10000;display:flex;align-items:center;justify-content:center;
+	position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+	background:rgba(0,0,0,.65);z-index:10000;
 }
 .shb-modal-content{
-	background:#fff;border-radius:10px;max-width:600px;width:100%;padding:40px 32px;position:relative;
-	box-shadow:0 8px 24px rgba(0,0,0,.2);animation:shb-pop .3s ease-out;
+	background:#fff;border-radius:10px;max-width:600px;width:90%;padding:40px 32px;
+	box-shadow:0 8px 24px rgba(0,0,0,.2);animation:shb-pop .3s ease-out;position:relative;
 }
 @keyframes shb-pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
 .shb-close{

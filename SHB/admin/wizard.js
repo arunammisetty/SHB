@@ -6,7 +6,7 @@ jQuery(function ($) {
 		$('#shb-wizard').fadeIn();
 	});
 
-	// Close modal
+	// Close modal (click X or outside)
 	$('.shb-close, #shb-wizard').on('click', function (e) {
 		if ($(e.target).is('.shb-close') || $(e.target).is('#shb-wizard')) {
 			$('#shb-wizard').fadeOut();

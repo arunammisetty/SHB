@@ -1,5 +1,4 @@
 === SHB – Security Headers Boss (by Arun Ammisetty) ===
-Contributors: arunammisetty
 Tags: security, headers, csp, hsts, referrer-policy
 Requires at least: 5.2
 Tested up to: 6.5
