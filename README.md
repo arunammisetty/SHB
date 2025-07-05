@@ -50,8 +50,6 @@
 |----------------------------------------|-------------------------------------------|
 | ![Wizard screenshot](docs/img/wizard.png) | ![Tile screenshot](docs/img/dashboard.png) |
 
-*(Place actual PNGs in `docs/img/` or WordPress.org “assets/” before committing.)*
-
 ---
 
 ## Quick Start
