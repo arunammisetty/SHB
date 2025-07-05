@@ -49,7 +49,7 @@
 | Wizard                                  | Dashboard                                 |
 |----------------------------------------|-------------------------------------------|
 | ![Wizard screenshot](docs/img/wizard.png) | ![Tile screenshot](docs/img/dashboard.png) |
-
+s
 ---
 
 ## Quick Start
