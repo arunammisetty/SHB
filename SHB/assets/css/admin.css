@@ -1,0 +1,7 @@
+#shb-dashboard-tile{
+	padding:20px;color:#fff;border-radius:6px;margin:16px 0;display:inline-block;
+}
+#shb-dashboard-tile.status-good{background:#46b450;}
+#shb-dashboard-tile.status-warning{background:#ffb900;}
+#shb-dashboard-tile.status-critical{background:#d63638;}
+#shb-dashboard-tile .score{font-size:20px;font-weight:600;margin-bottom:8px;}
