@@ -3,7 +3,7 @@ Contributors: arunammisetty
 Tags: security, headers, csp, hsts, referrer-policy
 Requires at least: 5.2
 Tested up to: 6.5
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,4 +39,10 @@ No code knowledge needed. Activate → pick a mode → you're protected.
 
 == Upgrade Notice ==
 
-N/A
+=== SHB – Security Headers Boss (by Arun Ammisetty) ===
+Stable tag: 1.1.0
+...
+= 1.1.0 =
+* Added AJAX wizard button, activation welcome notice, and prettier UI.
+* Minor code cleanup & i18n loading.
+

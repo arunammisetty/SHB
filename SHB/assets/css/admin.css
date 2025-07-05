@@ -1,7 +1,12 @@
+/* Dashboard tile */
 #shb-dashboard-tile{
-	padding:20px;color:#fff;border-radius:6px;margin:16px 0;display:inline-block;
+	padding:22px 28px;color:#fff;border-radius:8px;display:inline-block;
+	font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+	box-shadow:0 2px 6px rgba(0,0,0,.12);
 }
 #shb-dashboard-tile.status-good{background:#46b450;}
 #shb-dashboard-tile.status-warning{background:#ffb900;}
 #shb-dashboard-tile.status-critical{background:#d63638;}
-#shb-dashboard-tile .score{font-size:20px;font-weight:600;margin-bottom:8px;}
+#shb-dashboard-tile .score{
+	font-size:22px;font-weight:600;margin:0 0 10px;line-height:1.2;
+}

@@ -1,18 +1,25 @@
 /* global SHB_DATA, ajaxurl */
 jQuery(function ($) {
-	$('.button-primary[href="#shb-wizard"]').on('click', function (e) {
+	// Open modal
+	$(document).on('click', 'a[href="#shb-wizard"]', function (e) {
 		e.preventDefault();
 		$('#shb-wizard').fadeIn();
 	});
-	$('.shb-close').on('click', function () {
-		$('#shb-wizard').fadeOut();
+
+	// Close modal
+	$('.shb-close, #shb-wizard').on('click', function (e) {
+		if ($(e.target).is('.shb-close') || $(e.target).is('#shb-wizard')) {
+			$('#shb-wizard').fadeOut();
+		}
 	});
+
+	// Apply recommended
 	$('#shb-apply-suggested').on('click', function () {
-		const data = {
-			action: 'shb_apply_recommended',
-			nonce: SHB_DATA.nonce
-		};
-		$(this).prop('disabled', true).text('Applying...');
-		$.post(ajaxurl, data, () => location.reload());
+		const $btn = $(this).prop('disabled', true).text('Applying…');
+		$.post(
+			ajaxurl,
+			{ action: 'shb_apply_recommended', nonce: SHB_DATA.nonce },
+			function () { location.reload(); }
+		);
 	});
 });
